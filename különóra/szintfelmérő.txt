@@ -1,0 +1,49 @@
+Szintfelmérő
+
+1, Kérdezzük le azokat a férfi dolgozókat a minta séma dolgozo nevű táblájából, 
+akik a születésnapjuk hónapjában kerültek a céghez!
+
+2, Számoljuk ki helyesen az SQL segítségével, 
+évtől függetlenül azt az időpontot, amikor az óraátállítást 
+el kell végezni, óra pontossággal. (Március és október utolsó 
+szombatján, 2h-kor, illetve 3h-kor kell átállítani az órát
+
+3, Kérdezzük le a MINTA séma CEGEK táblájából az Rt-ket úgy, 
+hogy az Rt után legyen pont, de ha volt pont eleve, 
+akkor ne legyen két pont utána!
+
+4, Listázzuk ki az egyetemi adatbázisunkból (G06_Egyetem séma) a hallgatókat és a 
+tárgyak kódját, amiket felvettek. Azt is, hogy az adott tárgyat melyik 
+félévben vették fel. (Csak azok a hallgatók kellenek, akik vettek már
+fel tárgyat.)
+
+5, Listázzuk a webáruházunkból (G05_Webshop séma) azokat a vevőket, akik
+még soha nem rendeltek. Van ilyen
+
+6, Listázzuk ki a webáruházunkból (G05_Webshop séma) azokat a termékeket,
+amelyekből még soha nem rendeltek!
+
+7, Listázzuk ki, hogy szálláshelyenként (G01_Szallashely séma) hány szoba 
+és hány férőhely szerepel az adatbázisunkban! Írjuk ki a 
+szállás nevét és címét is!
+
+8, Ügyfeleink összesen hány éjszakára foglaltak nálunk 
+szállást? Csak azokat írjuk ki, akiknél legalább 40 napot 
+számolunk! (G01_Szallashely séma)
+
+9, Listázzuk ki, hogy melyik filmet hányszor kölcsönözték ki összesen, 
+és hányszor kölcsönözték ki 4 napnál hosszabb időre! Ha egyszer sem, 
+az is jelenjen meg az eredményben! (szemely, kolcsonzes, dvd táblák használhatóak)
+
+10, Kérdezzük le, hogy Komondi Alettának hány férfi 
+és hány női alkalmazottja van! (dolgozo és fonok táblák használhatóak)
+
+11, Írjuk ki a kölcsönzők nevét és hogy hány alkalommal kölcsönöztek
+ki filmet. Számoljuk ki, hogy mennyi a kölcsönzések átlag száma nemenként
+és írjuk a kölcsönzők mellé, hogy ők a nemük átlagához képest mennyivel 
+többször vagy kevesebbszer kölcsönöztek ki filmet. (szemely, kolcsonzes, dvd 
+táblák használhatóak)
+
+12, Készítsünk hisztogramot a filmekről a keletkezés éve alapján! 
+1930 és 2000 között tizes osztályközzel! Azt írjuk ki, hogy az egyes
+csoportokba hány film került! (szemely, kolcsonzes, dvd táblák használhatóak)

@@ -1,0 +1,53 @@
+--2 megoldás
+SELECT distinct kid, nev, beiratkozas
+FROM minta.kolcsonzo k 
+  JOIN minta.kolcsonzes b ON k.kid = b.kolcsonzo
+WHERE to_char(BEIRATKOZAS, 'MM') = '05'
+AND ' ' || upper(film) LIKE '% FÖLD %'
+ORDER by k.beiratkozas;
+
+
+--3 megoldás
+SELECT valtopenz, sum(nepesseg), COUNT(*) hasznalat
+FROM minta.orszagadatok 
+WHERE foldresz = 'Európa' 
+GROUP BY valtopenz
+HAVING COUNT(*) > 1
+ORDER by sum(nepesseg);
+
+--4 
+SELECT nem, count(*)
+FROM minta.kolcsonzes b 
+  RIGHT JOIN minta.kolcsonzo k ON k.kid = b.kolcsonzo
+WHERE kolcsonzo IS NULL
+GROUP BY nem;
+
+--5
+SELECT * 
+from (SELECT f.*, DENSE_RANK() OVER (ORDER BY alapitas) AS rangsor 
+      FROM minta.cegek  f) 
+WHERE rangsor < 16
+;
+
+--4
+UPDATE dolgozo d
+SET d.felv_nap = d.felv_nap - 365
+WHERE 1 < (SELECT count(1)
+            FROM fonok f
+            WHERE f.fonok_id = d.id);
+			
+--5
+
+CREATE TABLE film AS SELECT * FROM minta.dvd;
+
+ALTER TABLE film add constraint sorszam_pk primary key(sorszam);
+
+
+CREATE TABLE musor (
+film_azonosito NUMBER(3),
+vetites_kezdet DATE,
+helyiseg_sorszam NUMBER(2) CHECK (helyiseg_sorszam < 13),
+CONSTRAINT az_kezd_helys_pk PRIMARY KEY (vetites_kezdet, helyiseg_sorszam),
+CONSTRAINT film_az_fk FOREIGN KEY (film_azonosito) REFERENCES film(sorszam)
+);
+

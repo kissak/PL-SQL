@@ -1,0 +1,117 @@
+/*1. Kérdés: 
+Kérdezzük le a minta séma rendelés, rendelési tétel, termék 
+és kategória tábláinak segítségével az összes napot, 
+amin volt rendelés és azt, hogy mennyi volt a bevételünk a
+ megelõzõ egy hétben ruhákból (minden terméket vegyünk
+ figyelembe, ami a ruha fõkategóriába tartozik!)
+*/
+
+SELECT r.rendelesi_ido, 
+		sum(egysegar * mennyiseg) OVER (ORDER BY rendelesi_ido RANGE BETWEEN 7 PRECEDING AND CURRENT ROW) elmult_egy_het
+FROM minta.kategoria k 
+	JOIN minta.termek t ON k.alkategoria = t.kategoria
+	JOIN minta.rendelesi_tetel rt ON rt.termekkod = t.termekkod
+	JOIN minta.rendeles r ON r.rendelessorszam = rt.rendeles
+START WITH fokategoria = 'ruha'
+CONNECT BY fokategoria = PRIOR alkategoria
+ORDER BY 1 desc;
+ 
+ 
+
+2 kérdés
+Listázzuk ki a data dictionaryból a MINTA sémában található
+ összes idegen kulcsot! A lekérdezésbõl derüljön ki, 
+hogy melyik tábla melyik oszlopa melyik másik tábla melyik 
+oszlopára hivatkozik!
+
+SELECT  a_fk.owner,  a_fk.constraint_name, a_fk.table_name, a_fk.column_name, --referencing fk, melyik
+        c_pk.owner,  c_pk.constraint_name r_pk, c_pk.table_name r_table_name, c_pk.column_name r_column_name --referenced pk, melyikre
+FROM all_constraints c
+  JOIN all_cons_columns a_fk ON a_fk.owner = c.owner
+                            AND a_fk.constraint_name = c.constraint_name
+  JOIN all_cons_columns c_pk ON c.r_owner = c_pk.owner
+                            AND c.r_constraint_name = c_pk.constraint_name
+WHERE c.constraint_type = 'R'
+AND c.owner = 'MINTA' ;
+
+
+3 kérdés
+A minta séma ügyfél és rendelés táblájából listázzuk ki,
+ az egyes rendelések adatait a megrendelõ nevével és a 
+fizetési határidõvel együtt. A fizetési határidõ a
+ megrendeléstõl számított 15. nap legyen, kivéve, ha
+ szombatra
+ vagy vasárnapra esik, mert akkor a 15. nap után 
+ következõ hétfõ!
+
+SELECT 	u.login, 
+		u.vnev || ' ' || u.knev as nev,
+		CASE to_char(r.rendelesi_ido + 15, 'DAY')
+			WHEN 'SZOMBAT' THEN next_day(r.rendelesi_ido + 15, 'HÉTFŐ')
+			WHEN 'VASÁRNAP' THEN next_day(r.rendelesi_ido + 15, 'HÉTFŐ') 
+      ELSE trunc(r.rendelesi_ido + 15)
+		END as fizetesi_hatarido
+FROM minta.rendeles r
+	JOIN minta.ugyfel u ON u.login = r.login;
+ 
+
+4 kérdés
+Listázzuk ki a minta séma alkalmazott és fõnök tábláinak felhasználásával Komondi Aletta 4 legfiatalabb 
+beosztottjának minden adatát! (Minden beosztottját nézzük, ne csak a közvetleneket!)
+
+SELECT *
+FROM (
+	SELECT a.*
+	FROM fonok f
+		JOIN alkalmazott a ON f.id = a.aID
+	START WITH f.fonok_id = (select aid 
+							from alkalmazott
+							WHERE nev = 'Komondi Aletta'
+						  )
+	CONNECT BY f.fonok_id = PRIOR f.ID
+	ORDER BY szulev DESC)
+WHERE ROWNUM <5;
+
+
+
+5 kérdés
+Másoljuk le a minta séma ügyfél és rendelés tábláit a saját sémánkba! Állítsuk be mindkét tábla kulcs és idegen 
+kulcs kényszereit! Egészítsük ki az ügyfél táblát egy TORZSVASARLO oszloppal! Frissítsük a tábla adatait egy 
+utasítással: azok legyenek törzsvásárlók, akiknek volt 2015
+ májusában és 2017 januárjában is rendelésük!
+
+CREATE TABLE s_ugyfel AS SELECT * FROM minta.ugyfel;
+CREATE TABLE s_rendeles AS SELECT * FROM minta.rendeles;
+
+ALTER TABLE s_ugyfel
+ADD CONSTRAINT pk_ugyfel_login PRIMARY KEY (login);
+
+ALTER TABLE s_rendeles
+ADD CONSTRAINT pk_rendeles_rendelessorszam PRIMARY KEY (rendelessorszam);
+
+ALTER TABLE s_rendeles
+ADD CONSTRAINT fk_ugyfel_login_rendeles_login FOREIGN KEY (login) REFERENCES s_ugyfel(login);
+
+ALTER TABLE s_ugyfel
+ADD torzsvasarlo CHAR(1);
+
+UPDATE s_ugyfel s
+SET s.torzsvasarlo = 'Y'
+WHERE EXISTS(
+              SELECT sr.LOGIN
+              FROM s_rendeles sr
+              WHERE to_char(sr.rendelesi_ido, 'YYYY-MM') = '2015-05'
+              AND s.login = sr.login
+            )
+AND EXISTS(
+				SELECT sr.LOGIN
+				FROM s_rendeles sr
+				WHERE to_char(sr.rendelesi_ido, 'YYYY-MM') = '2017-01'
+        AND s.login = sr.login
+			);
+
+
+
+
+
+

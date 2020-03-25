@@ -1,0 +1,28 @@
+
+1. Kérdés: 
+Kérdezzük le a minta séma rendelés, rendelési tétel, termék és kategória tábláinak segítségével az összes napot, 
+amin volt rendelés és azt, hogy mennyi volt a bevételünk a megel?z? egy hétben ruhákból (minden terméket vegyünk
+figyelembe, ami a ruha f?kategóriába tartozik!)
+
+
+2 kérdés
+Listázzuk ki a data dictionaryból a MINTA sémában található összes idegen kulcsot! A lekérdezésb?l derüljön ki, 
+hogy melyik tábla melyik oszlopa melyik másik tábla melyik oszlopára hivatkozik!
+
+
+
+3 kérdés
+A minta séma ügyfél és rendelés táblájából listázzuk ki, az egyes rendelések adatait a megrendel? nevével és a 
+fizetési határid?vel együtt. A fizetési határid? a megrendelést?l számított 15. nap legyen, kivéve, ha szombatra
+vagy vasárnapra esik, mert akkor a 15. nap után következ? hétf?!
+
+
+4 kérdés
+Listázzuk ki a minta séma alkalmazott és f?nök tábláinak felhasználásával Komondi Aletta 4 legfiatalabb beosztottjának
+minden adatát! (Minden beosztottját nézzük, ne csak a közvetleneket!)
+
+
+5 kérdés
+Másoljuk le a minta séma ügyfél és rendelés tábláit a saját sémánkba! Állítsuk be mindkét tábla kulcs és idegen
+kulcs kényszereit! Egészítsük ki az ügyfél táblát egy TORZSVASARLO oszloppal! Frissítsük a tábla adatait egy utasítással:
+azok legyenek törzsvásárlók, akiknek volt 2015 májusában és 2017 januárjában is rendelésük!

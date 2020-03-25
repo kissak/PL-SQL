@@ -1,0 +1,216 @@
+JOIN
+
+
+Descartes szorzat (Cartesian Products)
+	A Cartesian join or Cartesian product is a join of every row of one table to every row of another table. 
+	This normally happens when no matching join columns are specified. For example, if table A with 100 rows
+	is joined with table B with 1000 rows, a Cartesian join will return 100,000 rows.
+
+	
+Inner Joins, Outer Joins
+	https://www.techonthenet.com/oracle/joins.php
+
+	
+NATURAL JOIN
+
+	A NATURAL JOIN is a JOIN operation that creates an implicit join clause for you based on the common
+	columns in the two tables being joined. Common columns are columns that have the same name in both tables.
+
+	A NATURAL JOIN can be an INNER join, a LEFT OUTER join, or a RIGHT OUTER join. The default is INNER join.
+
+	If the SELECT statement in which the NATURAL JOIN operation appears has an asterisk (*) in the select 
+	list, the asterisk will be expanded to the following list of columns (in this order):
+
+		All the common columns
+		Every column in the first (left) table that is not a common column
+		Every column in the second (right) table that is not a common column
+
+	An asterisk qualified by a table name (for example, COUNTRIES.*) will be expanded to every column of 
+	that table that is not a common column.
+
+	If a common column is referenced without being qualified by a table name, the column reference points 
+	to the column in the first (left) table if the join is an INNER JOIN or a LEFT OUTER JOIN. If it is a 
+	RIGHT OUTER JOIN, unqualified references to a common column point to the column in the second (right) table.
+	Syntax
+
+	TableExpression NATURAL [ { LEFT | RIGHT } [ OUTER ] | INNER ] JOIN { TableViewOrFunctionExpression | ( TableExpression ) }
+
+	Examples
+
+	If the tables COUNTRIES and CITIES have two common columns named COUNTRY and COUNTRY_ISO_CODE, the 
+	following two SELECT statements are equivalent:
+
+	SELECT * FROM COUNTRIES NATURAL JOIN CITIES
+
+	SELECT * FROM COUNTRIES JOIN CITIES
+		USING (COUNTRY, COUNTRY_ISO_CODE)
+
+	The following example is similar to the one above, but it also preserves unmatched rows from the first (left) table:
+
+	SELECT * FROM COUNTRIES NATURAL LEFT JOIN CITIES
+
+
+Self Joins
+
+	Using Self Joins: Example  The following query uses a self join to return the name of each employee 
+	along with the name of the employee's manager. A WHERE clause is added to shorten the output.
+
+	SELECT e1.last_name||' works for '||e2.last_name 
+	   "Employees and Their Managers"
+	   FROM employees e1, employees e2 
+	   WHERE e1.manager_id = e2.employee_id
+		  AND e1.last_name LIKE 'R%';
+
+	Employees and Their Managers   
+	-------------------------------
+	Rajs works for Mourgos
+	Raphaely works for King
+	Rogers works for Kaufling
+	Russell works for King
+
+	The join condition for this query uses the aliases e1 and e2 for the sample table employees:
+
+	e1.manager_id = e2.employee_id
+
+
+Equijoins 
+	
+	The following examples show various ways of joining tables in a query. In the first example, 
+	an equijoin returns the name and job of each employee and the number and name of the department 
+	in which the employee works:
+
+	SELECT last_name, job_id, departments.department_id, department_name
+	   FROM employees, departments
+	   WHERE employees.department_id = departments.department_id
+	   ORDER BY last_name;
+
+	LAST_NAME           JOB_ID     DEPARTMENT_ID DEPARTMENT_NAME
+	------------------- ---------- ------------- ----------------------
+	. . .
+	Sciarra             FI_ACCOUNT           100 Finance
+	Urman               FI_ACCOUNT           100 Finance
+	Popp                FI_ACCOUNT           100 Finance
+	. . .
+
+	You must use a join to return this data because employee names and jobs are stored in a different
+	table than department names. Oracle Database combines rows of the two tables according to this 
+	join condition:
+
+	employees.department_id = departments.department_id 
+
+	The following equijoin returns the name, job, department number, and department name of all sales managers:
+
+	SELECT last_name, job_id, departments.department_id, department_name
+	   FROM employees, departments
+	   WHERE employees.department_id = departments.department_id
+	   AND job_id = 'SA_MAN'
+	   ORDER BY last_name;
+
+	LAST_NAME           JOB_ID     DEPARTMENT_ID DEPARTMENT_NAME
+	------------------- ---------- ------------- -----------------------
+	Russell             SA_MAN                80 Sales
+	Partners            SA_MAN                80 Sales
+	Errazuriz           SA_MAN                80 Sales
+	Cambrault           SA_MAN                80 Sales
+	Zlotkey             SA_MAN                80 Sales
+
+	This query is identical to the preceding example, except that it uses an additional where_clause 
+	condition to return only rows with a job value of 'SA_MAN'.
+
+	
+Non-equijoin
+	
+	An nonequi (or theta) join is an inner join statement that uses an unequal operation 
+	(i.e: <>, >, <, !=, BETWEEN, etc.) to match rows from different tables. The converse 
+	of an nonequi join is a equi join operation.
+	
+	Examples
+
+	Using SCOTT's tables and Oracle join syntax:
+
+	SCOTT> SELECT e.ename, e.sal, s.grade
+	  2    FROM  emp e, salgrade s
+	  3    WHERE e.sal BETWEEN s.losal AND s.hisal;
+
+	ENAME             SAL      GRADE
+	---------- ---------- ----------
+	SMITH             800          1
+	JAMES             950          1
+	ADAMS            1100          1
+	WARD             1250          2
+	MARTIN           1250          2
+	MILLER           1300          2
+	TURNER           1500          3
+	ALLEN            1600          3
+	CLARK            2450          4
+	BLAKE            2850          4
+	JONES            2975          4
+	SCOTT            3000          4
+	FORD             3000          4
+	KING             5000          5
+
+	Using ANSI join syntax for the same query:
+
+	SELECT e.ename, e.sal, s.grade
+	FROM emp e INNER JOIN salgrade s
+		 ON e.sal BETWEEN s.losal AND s.hisal;
+
+
+ANSI syntax, Oracle syntax
+
+	+----------------------------------+------------------------------------------------+
+	|-INNER JOIN - CONVENTIONAL        |-INNER JOIN - ANSI SYNTAX                       |
+	|----------------------------------|------------------------------------------------|
+	|SELECT                            |SELECT                                          |
+	|      EMP.DEPTNO                  |       ENAME,                                   |
+	|FROM                              |       DNAME,                                   |
+	|      EMP,                        |       EMP.DEPTNO,                              |
+	|      DEPT                        |       DEPT.DEPTNO                              |
+	|WHERE                             | FROM                                           |
+	|      EMP.DEPTNO = DEPT.DEPTNO;   |       SCOTT.EMP INNER JOIN SCOTT.DEPT          |
+	|                                  |       ON EMP.DEPTNO = DEPT.DEPTNO;             |
+	|----------------------------------|------------------------------------------------|
+	|-LEFT OUTER JOIN - CONVENTIONAL   |-LEFT OUTER JOIN - ANSI SYNTAX                  |
+	|----------------------------------|------------------------------------------------|
+	|SELECT                            | SELECT                                         |
+	|      EMP.DEPTNO                  |       ENAME,                                   |
+	|FROM                              |       DNAME,                                   |
+	|      EMP,                        |       EMP.DEPTNO,                              |
+	|      DEPT                        |       DEPT.DEPTNO                              |
+	|WHERE                             | FROM                                           |
+	|      EMP.DEPTNO = DEPT.DEPTNO(+);|       SCOTT.EMP LEFT OUTER JOIN SCOTT.DEPT     |
+	|                                  |       ON EMP.DEPTNO = DEPT.DEPTNO;             |
+	|----------------------------------|------------------------------------------------|
+	|-RIGHT OUTER JOIN - CONVENTIONAL  |-RIGHT OUTER JOIN - ANSI SYNTAX                 |
+	|----------------------------------|------------------------------------------------|
+	|SELECT                            | SELECT                                         |
+	|      EMP.DEPTNO                  |       ENAME,                                   |
+	|FROM                              |       DNAME,                                   |
+	|      EMP,                        |       EMP.DEPTNO,                              |
+	|      DEPT                        |       DEPT.DEPTNO                              |
+	|WHERE                             | FROM                                           |
+	|      EMP.DEPTNO(+) = DEPT.DEPTNO;|       SCOTT.EMP RIGHT OUTER JOIN SCOTT.DEPT    |
+	|                                  |       ON EMP.DEPTNO = DEPT.DEPTNO;             |
+	|----------------------------------|------------------------------------------------|
+	|-FULL OUTER JOIN - CONVENTIONAL   |-FULL OUTER JOIN - ANSI SYNTAX                  |
+	|----------------------------------|------------------------------------------------|
+	|                                  |                                                |
+	|SELECT                            | SELECT                                         |
+	|      *                           |       *                                        |
+	|FROM                              | FROM                                           |
+	|      EMP,                        |       SCOTT.EMP FULL OUTER JOIN SCOTT.DEPT     |
+	|      DEPT                        |       ON EMP.DEPTNO = DEPT.DEPTNO;             |
+	|WHERE                             |                                                |
+	|      EMP.DEPTNO = DEPT.DEPTNO(+) |                                                |
+	|UNION ALL                         |                                                |
+	|SELECT                            |                                                |
+	|      *                           |                                                |
+	|FROM                              |                                                |
+	|      EMP,                        |                                                |
+	|      DEPT                        |                                                |
+	|WHERE                             |                                                |
+	|      EMP.DEPTNO(+) = DEPT.DEPTNO |                                                |
+	|      AND EMP.DEPTNO IS NULL;     |                                                |
+	|__________________________________|________________________________________________|
+
+
